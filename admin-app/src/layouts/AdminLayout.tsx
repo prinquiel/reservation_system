@@ -1,26 +1,18 @@
-import { LayoutDashboard, CalendarClock, Users2, UserCog, ShieldCheck, BarChart3, Settings } from 'lucide-react';
+import { LayoutDashboard, CalendarClock, Users2, BarChart3 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
 import { useSupabase } from '../providers/SupabaseProvider';
-import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 
 const navItems = [
   { to: '/', label: 'Resumen', icon: LayoutDashboard },
   { to: '/reservations', label: 'Reservas', icon: CalendarClock },
   { to: '/users', label: 'Clientes', icon: Users2 },
-  { to: '/workers', label: 'Gestión de trabajadores', icon: UserCog },
-  { to: '/roles', label: 'Roles y accesos', icon: ShieldCheck },
-  { to: '/analytics', label: 'Analítica', icon: BarChart3 },
-  { to: '/settings', label: 'Configuración', icon: Settings }
+  { to: '/analytics', label: 'Analítica', icon: BarChart3 }
 ];
 
 export function AdminLayout({ children }: PropsWithChildren) {
-  const { profile, client } = useSupabase();
-
-  async function handleSignOut() {
-    await client.auth.signOut();
-  }
+  const { profile } = useSupabase();
 
   return (
     <div className="flex min-h-screen bg-surface-muted">
@@ -65,9 +57,10 @@ export function AdminLayout({ children }: PropsWithChildren) {
               {profile?.role ?? 'worker'}
             </span>
           </div>
-          <Button variant="ghost" onClick={handleSignOut} className="text-slate-500 hover:text-slate-900">
-            Cerrar sesión
-          </Button>
+          <div className="text-right text-xs text-slate-400">
+            <p className="font-semibold text-slate-600">administrador@gmail.com</p>
+            <p>Sesión gestionada automáticamente</p>
+          </div>
         </header>
         <main className="flex-1 space-y-6 bg-surface-muted px-6 py-8 lg:px-8">{children}</main>
       </div>

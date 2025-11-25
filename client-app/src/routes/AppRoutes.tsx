@@ -6,6 +6,7 @@ import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { ReservationOptionsPage } from '../pages/ReservationOptionsPage';
 import { ReservationStatusPage } from '../pages/ReservationStatusPage';
+import { MyReservationsPage } from '../pages/MyReservationsPage';
 
 export function AppRoutes() {
   return (
@@ -16,6 +17,7 @@ export function AppRoutes() {
         <Route path="/reservations/new" element={<CreateReservationPage />} />
         <Route path="/reservations/status" element={<ReservationStatusPage />} />
         <Route path="/reservations/options" element={<ReservationOptionsPage />} />
+        <Route path="/reservations/mine" element={<MyReservationsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </MainLayout>

@@ -1,62 +1,31 @@
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import type { Session, SupabaseClient } from '@supabase/supabase-js';
+import { PropsWithChildren, createContext, useContext, useMemo } from 'react';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 import type { WorkerProfile } from '../types/profile';
 
 type SupabaseContextValue = {
   client: SupabaseClient;
-  session: Session | null;
-  profile: WorkerProfile | null;
-  initializing: boolean;
+  profile: WorkerProfile;
 };
 
 const SupabaseContext = createContext<SupabaseContextValue | undefined>(undefined);
 
+const DEFAULT_ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? 'administrador@gmail.com';
+const DEFAULT_ADMIN_NAME = import.meta.env.VITE_ADMIN_NAME ?? 'Administrador';
+
 export function SupabaseProvider({ children }: PropsWithChildren) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<WorkerProfile | null>(null);
-  const [initializing, setInitializing] = useState(true);
+  const profile = useMemo<WorkerProfile>(
+    () => ({
+      id: 'static-admin',
+      email: DEFAULT_ADMIN_EMAIL,
+      full_name: DEFAULT_ADMIN_NAME,
+      phone: null,
+      role: 'admin'
+    }),
+    []
+  );
 
-  useEffect(() => {
-    const synchronizeSession = async () => {
-      const {
-        data: { session: currentSession }
-      } = await supabase.auth.getSession();
-      setSession(currentSession);
-      setInitializing(false);
-    };
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
-    });
-
-    synchronizeSession();
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!session?.user) {
-        setProfile(null);
-        return;
-      }
-
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, role, phone')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
-      setProfile((data as WorkerProfile | null) ?? null);
-    };
-
-    loadProfile();
-  }, [session?.user?.id]);
-
-  const value = useMemo(() => ({ client: supabase, session, profile, initializing }), [session, profile, initializing]);
+  const value = useMemo(() => ({ client: supabase, profile }), [profile]);
 
   return <SupabaseContext.Provider value={value}>{children}</SupabaseContext.Provider>;
 }

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { ReservationStatus } from '../types/reservation';
@@ -10,9 +10,12 @@ type ReservationSearchResult = {
   id: string;
   public_reference: string;
   status: ReservationStatus;
-  scheduled_for: string;
+  scheduled_for: string | null;
   service_name: string;
   assigned_worker_name: string | null;
+  buyer_name: string | null;
+  contact_preference: string | null;
+  party_size: number | null;
 };
 
 export function ReservationStatusPage() {
@@ -21,6 +24,15 @@ export function ReservationStatusPage() {
   const [result, setResult] = useState<ReservationSearchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const contactPreferenceOptions = useMemo(
+    () => ({
+      whatsapp: t('booking.contactPreferenceOptions.whatsapp'),
+      email: t('booking.contactPreferenceOptions.email'),
+      phone_call: t('booking.contactPreferenceOptions.phoneCall')
+    }),
+    [t]
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -40,7 +52,14 @@ export function ReservationStatusPage() {
       setError(t('statusPage.errors.generic'));
       setResult(null);
     } else {
-      setResult(data as ReservationSearchResult | null);
+      const record = Array.isArray(data) ? (data[0] as ReservationSearchResult | undefined) : (data as ReservationSearchResult | null);
+
+      if (!record) {
+        setError(t('statusPage.noResult'));
+        setResult(null);
+      } else {
+        setResult(record);
+      }
     }
 
     setLoading(false);
@@ -92,10 +111,12 @@ export function ReservationStatusPage() {
               <div>
                 <p className="text-white/50">{t('statusPage.labels.scheduled')}</p>
                 <p className="text-lg font-semibold text-white">
-                  {new Date(result.scheduled_for).toLocaleString(undefined, {
-                    dateStyle: 'medium',
-                    timeStyle: 'short'
-                  })}
+                  {result.scheduled_for
+                    ? new Date(result.scheduled_for).toLocaleString(undefined, {
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                      })
+                    : t('statusPage.unscheduled')}
                 </p>
               </div>
               <div>
@@ -107,6 +128,26 @@ export function ReservationStatusPage() {
               <div>
                 <p className="text-white/50">{t('statusPage.labels.reference')}</p>
                 <p className="text-lg font-semibold text-white">{result.public_reference}</p>
+              </div>
+              <div>
+                <p className="text-white/50">{t('statusPage.labels.guest')}</p>
+                <p className="text-lg font-semibold text-white">{result.buyer_name ?? '—'}</p>
+              </div>
+              <div>
+                <p className="text-white/50">{t('statusPage.labels.partySize')}</p>
+                <p className="text-lg font-semibold text-white">
+                  {typeof result.party_size === 'number'
+                    ? t('statusPage.partySizeValue', { count: result.party_size })
+                    : t('statusPage.partySizeUnknown')}
+                </p>
+              </div>
+              <div>
+                <p className="text-white/50">{t('statusPage.labels.contactPreference')}</p>
+                <p className="text-lg font-semibold text-white">
+                  {result.contact_preference
+                    ? contactPreferenceOptions[result.contact_preference] ?? result.contact_preference
+                    : t('statusPage.contactPreferenceNone')}
+                </p>
               </div>
             </div>
           </motion.article>

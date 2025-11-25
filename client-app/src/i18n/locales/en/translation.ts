@@ -4,7 +4,8 @@ const translation = {
       { to: '/', label: 'Home' },
       { to: '/reservations/options', label: 'Experiences' },
       { to: '/reservations/new', label: 'Book' },
-      { to: '/reservations/status', label: 'Track' }
+      { to: '/reservations/status', label: 'Track' },
+      { to: '/reservations/mine', label: 'My reservations' }
     ],
     signIn: 'Sign in',
     concierge: 'Concierge access',
@@ -131,6 +132,20 @@ const translation = {
     selectLabel: 'Select an experience',
     selectPlaceholder: 'Choose a Costa Rican experience',
     datetimeLabel: 'Preferred date & time',
+    fullNameLabel: 'Full name',
+    fullNamePlaceholder: 'Who should we coordinate with?',
+    phoneLabel: 'Phone number',
+    phonePlaceholder: 'Include country code if outside Costa Rica',
+    partySizeLabel: 'Guests in your group',
+    partySizePlaceholder: 'e.g. 4',
+    contactPreferenceLabel: 'Preferred contact method',
+    contactPreferencePlaceholder: 'Select how we should reach you',
+    contactPreferenceOptions: {
+      whatsapp: 'WhatsApp',
+      email: 'Email',
+      phoneCall: 'Phone call',
+      phone_call: 'Phone call'
+    },
     notesLabel: 'Special details',
     notesPlaceholder: 'Share ages, interests, or dietary requirements',
     submit: 'Submit reservation',
@@ -138,6 +153,8 @@ const translation = {
     success: 'Reservation sent! Your code is {{code}}',
     errors: {
       noOption: 'Select an experience to continue.',
+      missingContact: 'Add your name and phone so we can reach you.',
+      invalidPartySize: 'Group size must be a number greater than zero.',
       generic: 'We could not save your reservation.'
     },
     availabilityTitle: 'Suggested availability',
@@ -184,23 +201,41 @@ const translation = {
       empty: 'Enter your confirmation code.',
       generic: 'We did not find a reservation with that code.'
     },
+    noResult: 'We could not find a reservation with that reference.',
     labels: {
       status: 'Status',
       scheduled: 'Scheduled for',
       concierge: 'Assigned concierge',
-      reference: 'Reference code'
-    }
+      reference: 'Reference code',
+      guest: 'Lead traveler',
+      partySize: 'Group size',
+      contactPreference: 'Preferred contact'
+    },
+    unscheduled: 'To be confirmed',
+    contactPreferenceNone: 'No preference registered',
+    partySizeUnknown: '—',
+    partySizeValue_one: '{{count}} guest',
+    partySizeValue_other: '{{count}} guests'
   },
   auth: {
     title: 'Account access',
     description: 'Manage saved reservations and get priority support.',
     email: 'Email',
     password: 'Password',
+    confirmPassword: 'Confirm password',
     signIn: 'Sign in',
     signingIn: 'Signing in…',
+    signUp: 'Create account',
+    signingUp: 'Creating account…',
     signedIn: 'Signed in successfully.',
     signOut: 'Sign out',
-    signedAs: 'Signed in as {{email}}'
+    signedAs: 'Signed in as {{email}}',
+    noAccount: 'No account yet?',
+    haveAccount: 'Already have an account?',
+    createAccount: 'Create account',
+    signInHere: 'Sign in here',
+    passwordMismatch: 'Passwords do not match.',
+    checkEmail: 'Check {{email}} to confirm your account before signing in.'
   },
   notFound: {
     title: 'We could not find this page',
@@ -209,6 +244,30 @@ const translation = {
   },
   languageSwitcher: {
     tooltip: 'Switch language'
+  },
+  myReservations: {
+    title: 'My reservations',
+    description: 'Review and track the concierge experiences you have started with us.',
+    loading: 'Loading your reservations…',
+    error: 'We could not load your reservations right now.',
+    emptyTitle: 'No reservations yet',
+    emptyDescription: 'Plan your first Costa Rican experience to see it listed here.',
+    emptyCta: 'Start a reservation',
+    signInTitle: 'Access your reservations',
+    signInDescription: 'Sign in to view upcoming experiences and manage your requests.',
+    signInCta: 'Sign in',
+    reference: 'Reference • {{code}}',
+    scheduledFor: 'Scheduled for',
+    createdAt: 'Created on',
+    partySize: 'Group size',
+    partySizeValue_one: '{{count}} guest',
+    partySizeValue_other: '{{count}} guests',
+    contactPreference: 'Preferred contact',
+    contactPreferenceNone: 'No contact preference registered',
+    notes: 'Traveler notes',
+    notesEmpty: 'No notes were provided.',
+    unscheduled: 'To be confirmed',
+    unnamedExperience: 'Costa Rica experience'
   }
 };
 

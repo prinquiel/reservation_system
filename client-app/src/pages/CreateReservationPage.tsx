@@ -25,6 +25,10 @@ export function CreateReservationPage() {
   const [selectedOption, setSelectedOption] = useState<string>('');
   const [scheduledFor, setScheduledFor] = useState('');
   const [notes, setNotes] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [partySize, setPartySize] = useState('');
+  const [contactPreference, setContactPreference] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successId, setSuccessId] = useState<string | null>(null);
@@ -45,6 +49,30 @@ export function CreateReservationPage() {
 
     fetchOptions();
   }, [client]);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!session?.user?.id) {
+        return;
+      }
+
+      const { data } = await client
+        .from('profiles')
+        .select('full_name, phone')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (data?.full_name) {
+        setFullName(data.full_name);
+      }
+
+      if (data?.phone) {
+        setPhone(data.phone);
+      }
+    };
+
+    loadProfile();
+  }, [client, session?.user?.id]);
 
   useEffect(() => {
     if (!selectedOption) {
@@ -78,6 +106,18 @@ export function CreateReservationPage() {
       return;
     }
 
+    if (!fullName.trim() || !phone.trim()) {
+      setError(t('booking.errors.missingContact'));
+      return;
+    }
+
+    const parsedPartySize = partySize.trim() ? Number(partySize) : null;
+
+    if (parsedPartySize !== null && (Number.isNaN(parsedPartySize) || parsedPartySize <= 0)) {
+      setError(t('booking.errors.invalidPartySize'));
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -85,7 +125,11 @@ export function CreateReservationPage() {
       reservation_input: {
         service_option_id: selectedOption,
         scheduled_for: scheduledFor || null,
-        notes
+        notes,
+        contact_full_name: fullName.trim(),
+        contact_phone: phone.trim(),
+        party_size: parsedPartySize,
+        contact_preference: contactPreference || null
       }
     });
 
@@ -95,6 +139,8 @@ export function CreateReservationPage() {
       setSuccessId(data.reservation_id as string);
       setScheduledFor('');
       setNotes('');
+      setPartySize('');
+      setContactPreference('');
     }
 
     setSubmitting(false);
@@ -203,6 +249,74 @@ export function CreateReservationPage() {
               type="datetime-local"
               className="mt-2 w-full rounded-2xl border border-white/20 bg-brand-background/60 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-brand-accent/60"
             />
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-white/80" htmlFor="full_name">
+                {t('booking.fullNameLabel')}
+              </label>
+              <input
+                id="full_name"
+                name="full_name"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
+                type="text"
+                required
+                placeholder={t('booking.fullNamePlaceholder') as string}
+                className="mt-2 w-full rounded-2xl border border-white/20 bg-brand-background/60 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-brand-accent/60"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-white/80" htmlFor="phone">
+                {t('booking.phoneLabel')}
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
+                type="tel"
+                required
+                placeholder={t('booking.phonePlaceholder') as string}
+                className="mt-2 w-full rounded-2xl border border-white/20 bg-brand-background/60 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-brand-accent/60"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div>
+              <label className="block text-sm font-semibold text-white/80" htmlFor="party_size">
+                {t('booking.partySizeLabel')}
+              </label>
+              <input
+                id="party_size"
+                name="party_size"
+                value={partySize}
+                onChange={(event) => setPartySize(event.target.value)}
+                type="number"
+                min={1}
+                placeholder={t('booking.partySizePlaceholder') as string}
+                className="mt-2 w-full rounded-2xl border border-white/20 bg-brand-background/60 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-brand-accent/60"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-white/80" htmlFor="contact_preference">
+                {t('booking.contactPreferenceLabel')}
+              </label>
+              <select
+                id="contact_preference"
+                name="contact_preference"
+                value={contactPreference}
+                onChange={(event) => setContactPreference(event.target.value)}
+                className="mt-2 w-full rounded-2xl border border-white/20 bg-brand-background/60 px-4 py-3 text-sm text-white focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-brand-accent/60"
+              >
+                <option value="">{t('booking.contactPreferencePlaceholder')}</option>
+                <option value="whatsapp">{t('booking.contactPreferenceOptions.whatsapp')}</option>
+                <option value="email">{t('booking.contactPreferenceOptions.email')}</option>
+                <option value="phone_call">{t('booking.contactPreferenceOptions.phoneCall')}</option>
+              </select>
+            </div>
           </div>
 
           <div>

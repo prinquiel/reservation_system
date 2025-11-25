@@ -18,6 +18,12 @@ const statusOptions: ReservationDetail['status'][] = [
   'rejected'
 ];
 
+const contactPreferenceLabels: Record<string, string> = {
+  whatsapp: 'WhatsApp',
+  email: 'Correo electrónico',
+  phone_call: 'Llamada telefónica'
+};
+
 export function ReservationDetailPage() {
   const { id } = useParams();
   const [reservation, setReservation] = useState<ReservationDetail | null>(null);
@@ -114,6 +120,19 @@ export function ReservationDetailPage() {
                   : 'Por definir'}
               </p>
               <p className="text-sm text-slate-500">Duración • {reservation.duration_minutes} min</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase text-slate-500">Preferencias</p>
+              <p className="mt-2 text-sm text-slate-500">
+                Grupo:{' '}
+                {reservation.party_size ? `${reservation.party_size} ${reservation.party_size === 1 ? 'persona' : 'personas'}` : 'Sin definir'}
+              </p>
+              <p className="text-sm text-slate-500">
+                Contacto:{' '}
+                {reservation.contact_preference
+                  ? contactPreferenceLabels[reservation.contact_preference] ?? reservation.contact_preference
+                  : 'Sin preferencia'}
+              </p>
             </div>
             <div className="md:col-span-2">
               <p className="text-xs uppercase text-slate-500">Notas del cliente</p>
