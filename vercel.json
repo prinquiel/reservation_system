@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "admin-app/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/admin-app/$1"
+    }
+  ],
+  "functions": {
+    "admin-app/dist/index.html": {
+      "includeFiles": "admin-app/dist/**"
+    }
+  }
+}
