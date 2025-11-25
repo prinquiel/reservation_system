@@ -142,7 +142,7 @@ export function MyReservationsPage() {
               });
 
               const contactPreferenceLabel = reservation.contact_preference
-                ? contactPreferenceOptions[reservation.contact_preference] ?? t('myReservations.contactPreferenceNone')
+                ? contactPreferenceOptions[reservation.contact_preference as keyof typeof contactPreferenceOptions] ?? t('myReservations.contactPreferenceNone')
                 : t('myReservations.contactPreferenceNone');
 
               return (

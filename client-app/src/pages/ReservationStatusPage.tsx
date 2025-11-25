@@ -145,7 +145,7 @@ export function ReservationStatusPage() {
                 <p className="text-white/50">{t('statusPage.labels.contactPreference')}</p>
                 <p className="text-lg font-semibold text-white">
                   {result.contact_preference
-                    ? contactPreferenceOptions[result.contact_preference] ?? result.contact_preference
+                    ? contactPreferenceOptions[result.contact_preference as keyof typeof contactPreferenceOptions] ?? result.contact_preference
                     : t('statusPage.contactPreferenceNone')}
                 </p>
               </div>
